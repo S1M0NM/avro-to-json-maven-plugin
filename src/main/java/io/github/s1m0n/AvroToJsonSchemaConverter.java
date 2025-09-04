@@ -10,42 +10,64 @@ public class AvroToJsonSchemaConverter {
     static Map<String, Object> convert(Schema schema) {
         Map<String, Object> root = new LinkedHashMap<>();
         root.put("$schema", "http://json-schema.org/draft-07/schema#");
-        Map<String, Object> def = toJsonSchema(schema, new HashMap<>());
+        Map<String, Object> def = toJsonSchema(schema);
         root.putAll(def);
         return root;
     }
 
-    private static Map<String, Object> toJsonSchema(Schema schema, Map<String, Map<String, Object>> defs) {
+    private static Map<String, Object> toJsonSchema(Schema schema) {
         Map<String, Object> node = new LinkedHashMap<>();
         switch (schema.getType()) {
-            case NULL: node.put("type", "null"); break;
-            case BOOLEAN: node.put("type", "boolean"); break;
-            case INT: node.put("type", "integer"); node.put("format", "int32"); break;
+            case NULL:
+                node.put("type", "null");
+                break;
+            case BOOLEAN:
+                node.put("type", "boolean");
+                break;
+            case INT:
+                node.put("type", "integer");
+                node.put("format", "int32");
+                break;
             case LONG:
                 node.put("type", "integer");
-                if (isLogical(schema, "timestamp-millis")) { node.put("type", "string"); node.put("format", "date-time"); }
-                else if (isLogical(schema, "date")) { node.put("type", "string"); node.put("format", "date"); }
+                if (isLogical(schema, "timestamp-millis")) {
+                    node.put("type", "string");
+                    node.put("format", "date-time");
+                } else if (isLogical(schema, "date")) {
+                    node.put("type", "string");
+                    node.put("format", "date");
+                }
                 break;
-            case FLOAT: node.put("type", "number"); node.put("format", "float"); break;
-            case DOUBLE: node.put("type", "number"); node.put("format", "double"); break;
+            case FLOAT:
+                node.put("type", "number");
+                node.put("format", "float");
+                break;
+            case DOUBLE:
+                node.put("type", "number");
+                node.put("format", "double");
+                break;
             case BYTES:
-                node.put("type", "string"); node.put("contentEncoding", "base64");
+                node.put("type", "string");
+                node.put("contentEncoding", "base64");
                 break;
-            case STRING: node.put("type", "string"); break;
+            case STRING:
+                node.put("type", "string");
+                break;
             case ENUM:
                 node.put("type", "string");
                 node.put("enum", schema.getEnumSymbols());
                 break;
             case FIXED:
-                node.put("type", "string"); node.put("contentEncoding", "base64");
+                node.put("type", "string");
+                node.put("contentEncoding", "base64");
                 break;
             case ARRAY:
                 node.put("type", "array");
-                node.put("items", toJsonSchema(schema.getElementType(), defs));
+                node.put("items", toJsonSchema(schema.getElementType()));
                 break;
             case MAP:
                 node.put("type", "object");
-                node.put("additionalProperties", toJsonSchema(schema.getValueType(), defs));
+                node.put("additionalProperties", toJsonSchema(schema.getValueType()));
                 break;
             case RECORD:
                 node.put("type", "object");
@@ -53,7 +75,7 @@ public class AvroToJsonSchemaConverter {
                 List<String> required = new ArrayList<>();
                 for (Schema.Field f : schema.getFields()) {
                     Schema fSchema = unwrapNullable(f.schema());
-                    props.put(f.name(), toJsonSchema(fSchema, defs));
+                    props.put(f.name(), toJsonSchema(fSchema));
                     if (!isNullable(f.schema())) {
                         required.add(f.name());
                     }
@@ -67,12 +89,12 @@ public class AvroToJsonSchemaConverter {
                 List<Map<String, Object>> anyOf = new ArrayList<>();
                 for (Schema t : types) {
                     if (t.getType() == Schema.Type.NULL) continue;
-                    anyOf.add(toJsonSchema(t, defs));
+                    anyOf.add(toJsonSchema(t));
                 }
                 if (nullable) {
                     anyOf.add(Collections.singletonMap("type", "null"));
                 }
-                if (anyOf.size() == 1) return anyOf.get(0);
+                if (anyOf.size() == 1) return anyOf.getFirst();
                 node.put("anyOf", anyOf);
                 break;
             default:

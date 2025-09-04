@@ -11,7 +11,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Map;
 
@@ -69,17 +68,16 @@ public class AvroToJsonMojo extends AbstractMojo {
     }
 
     private String relativize(File base, File file) throws IOException {
-        String basePath = base.getCanonicalFile().toPath().toString();
-        String filePath = file.getCanonicalFile().toPath().toString();
         String rel = file.getCanonicalFile().toPath().toString();
         try {
             rel = base.getCanonicalFile().toPath().relativize(file.getCanonicalFile().toPath()).toString();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return rel;
     }
 
     private void processFile(File avscFile, String relativeName) throws IOException, MojoExecutionException {
-        String content = new String(Files.readAllBytes(avscFile.toPath()), StandardCharsets.UTF_8);
+        String content = Files.readString(avscFile.toPath());
         org.apache.avro.Schema avroSchema;
         try {
             avroSchema = new Schema.Parser().parse(content);
@@ -97,7 +95,7 @@ public class AvroToJsonMojo extends AbstractMojo {
             throw new MojoExecutionException("Could not create directory: " + parent);
         }
         String json = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(jsonSchema);
-        java.nio.file.Files.write(outFile.toPath(), json.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        Files.writeString(outFile.toPath(), json);
         getLog().info("Converted " + avscFile + " -> " + outFile);
     }
 }
