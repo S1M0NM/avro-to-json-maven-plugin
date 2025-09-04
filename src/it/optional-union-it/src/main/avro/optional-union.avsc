@@ -1,0 +1,28 @@
+{
+  "type": "record",
+  "name": "Order",
+  "namespace": "it.optional",
+  "fields": [
+    {"name": "orderId", "type": "string"},
+    {"name": "note", "type": ["null", "string"], "default": null},
+    {"name": "discount", "type": ["null", "double"], "default": null},
+    {"name": "customer", "type": [
+      {
+        "type": "record",
+        "name": "RegisteredCustomer",
+        "fields": [
+          {"name": "id", "type": "long"},
+          {"name": "email", "type": "string"}
+        ]
+      },
+      {
+        "type": "record",
+        "name": "GuestCustomer",
+        "fields": [
+          {"name": "nickname", "type": "string"}
+        ]
+      }
+    ]},
+    {"name": "status", "type": {"type":"enum", "name":"Status", "symbols":["PENDING","PAID","CANCELLED"]}, "default":"PENDING"}
+  ]
+}
