@@ -1,0 +1,10 @@
+{
+  "type": "record",
+  "name": "User",
+  "namespace": "it.sample",
+  "fields": [
+    {"name": "id", "type": "long"},
+    {"name": "name", "type": ["null", "string"], "default": null},
+    {"name": "tags", "type": {"type": "array", "items": "string"}}
+  ]
+}
