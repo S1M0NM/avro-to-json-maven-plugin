@@ -1,0 +1,64 @@
+name: Build and Conditional Deploy
+
+on:
+  push:
+    branches:
+      - '**'     # Match all branches
+  pull_request:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build with Maven
+        run: mvn clean package --batch-mode
+
+      - name: Run integration tests
+        run: mvn verify -Prun-its --batch-mode
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: target/*.jar
+
+  deploy:
+    if: github.ref == 'refs/heads/main'  # ✅ Only run on main
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java for Deploy
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run integration tests
+        run: mvn verify -Prun-its --batch-mode
+
+      - name: Publish package
+        run: mvn --batch-mode deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

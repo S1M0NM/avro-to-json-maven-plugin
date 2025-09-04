@@ -8,15 +8,24 @@
     <packaging>maven-plugin</packaging>
 
     <name>avro-to-json-plugin Maven Plugin</name>
-
-    <!-- FIXME change it to the project's website -->
-    <url>http://maven.apache.org</url>
-
+    <description>
+        Maven Plugin for AVRO-Schema to JSON-Schema Conversion
+    </description>
+    <url>https://github.com/S1M0NM/avro-to-json-maven-plugin</url>
+    
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/S1M0NM/avro-to-json-maven-plugin</url>
+        </repository>
+    </distributionManagement>
 
     <dependencies>
         <!-- Maven Plugin Dependencies -->
