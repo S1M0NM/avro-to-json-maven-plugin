@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.s1m0n</groupId>
+    <groupId>io.github.s1m0nm</groupId>
     <artifactId>avro-to-json-plugin</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
@@ -12,7 +12,7 @@
         Maven Plugin for AVRO-Schema to JSON-Schema Conversion
     </description>
     <url>https://github.com/S1M0NM/avro-to-json-maven-plugin</url>
-    
+
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
