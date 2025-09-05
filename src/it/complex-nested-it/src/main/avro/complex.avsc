@@ -4,34 +4,141 @@
   "namespace": "it.complex",
   "doc": "An invoice with nested records and unions",
   "fields": [
-    {"name": "invoiceId", "type": "string", "doc": "Invoice identifier"},
-    {"name": "createdAt", "type": {"type": "long", "logicalType": "timestamp-millis"}, "doc": "Creation timestamp"},
-    {"name": "currency", "type": {"type":"enum","name":"Currency","symbols":["USD","EUR","CHF"]}, "doc": "Currency code"},
-    {"name": "amounts", "type": {"type":"map", "values": "double"}, "doc": "Amounts by category"},
-    {"name": "attachments", "type": {"type":"array", "items": {"type":"fixed", "name":"BlobId", "size": 16}}, "doc": "Binary attachment ids"},
-    {"name": "customer", "type": {
-      "type": "record",
-      "name": "Customer",
-      "doc": "Invoice customer",
-      "fields": [
-        {"name": "id", "type": "long", "doc": "Customer id"},
-        {"name": "name", "type": ["null","string"], "default": null, "doc": "Customer name"},
-        {"name": "addresses", "type": {"type":"array", "items": {
+    {
+      "name": "invoiceId",
+      "type": "string",
+      "doc": "Invoice identifier"
+    },
+    {
+      "name": "createdAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Creation timestamp"
+    },
+    {
+      "name": "currency",
+      "type": {
+        "type": "enum",
+        "name": "Currency",
+        "symbols": [
+          "USD",
+          "EUR",
+          "CHF"
+        ]
+      },
+      "doc": "Currency code"
+    },
+    {
+      "name": "amounts",
+      "type": {
+        "type": "map",
+        "values": "double"
+      },
+      "doc": "Amounts by category"
+    },
+    {
+      "name": "attachments",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "fixed",
+          "name": "BlobId",
+          "size": 16
+        }
+      },
+      "doc": "Binary attachment ids"
+    },
+    {
+      "name": "customer",
+      "type": {
+        "type": "record",
+        "name": "Customer",
+        "doc": "Invoice customer",
+        "fields": [
+          {
+            "name": "id",
+            "type": "long",
+            "doc": "Customer id"
+          },
+          {
+            "name": "name",
+            "type": [
+              "null",
+              "string"
+            ],
+            "default": null,
+            "doc": "Customer name"
+          },
+          {
+            "name": "addresses",
+            "type": {
+              "type": "array",
+              "items": {
+                "type": "record",
+                "name": "Address",
+                "doc": "Postal address",
+                "fields": [
+                  {
+                    "name": "street",
+                    "type": "string",
+                    "doc": "Street name"
+                  },
+                  {
+                    "name": "zip",
+                    "type": "string",
+                    "doc": "ZIP code"
+                  },
+                  {
+                    "name": "country",
+                    "type": "string",
+                    "doc": "Country code"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "payment",
+      "type": [
+        "null",
+        {
           "type": "record",
-          "name": "Address",
-          "doc": "Postal address",
+          "name": "Card",
+          "doc": "Card payment",
           "fields": [
-            {"name": "street", "type": "string", "doc": "Street name"},
-            {"name": "zip", "type": "string", "doc": "ZIP code"},
-            {"name": "country", "type": "string", "doc": "Country code"}
+            {
+              "name": "last4",
+              "type": "string",
+              "doc": "Card last 4"
+            },
+            {
+              "name": "network",
+              "type": "string",
+              "doc": "Card network"
+            }
           ]
-        }}}
-      ]
-    }},
-    {"name": "payment", "type": [
-      "null",
-      {"type":"record","name":"Card","doc":"Card payment","fields":[{"name":"last4","type":"string","doc":"Card last 4"},{"name":"network","type":"string","doc":"Card network"}]},
-      {"type":"record","name":"Wire","doc":"Wire transfer","fields":[{"name":"iban","type":"string","doc":"IBAN"}]}
-    ], "default": null, "doc": "Payment method"}
+        },
+        {
+          "type": "record",
+          "name": "Wire",
+          "doc": "Wire transfer",
+          "fields": [
+            {
+              "name": "iban",
+              "type": "string",
+              "doc": "IBAN"
+            }
+          ]
+        }
+      ],
+      "default": null,
+      "doc": "Payment method"
+    }
   ]
 }
+

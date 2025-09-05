@@ -4,8 +4,29 @@
   "namespace": "it.sample",
   "doc": "A simple user record",
   "fields": [
-    {"name": "id", "type": "long", "doc": "Unique identifier"},
-    {"name": "name", "type": ["null", "string"], "default": null, "doc": "Display name"},
-    {"name": "tags", "type": {"type": "array", "items": "string"}, "doc": "User labels"}
+    {
+      "name": "id",
+      "type": "long",
+      "doc": "Unique identifier",
+      "default": 0
+    },
+    {
+      "name": "name",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "Display name"
+    },
+    {
+      "name": "tags",
+      "type": {
+        "type": "array",
+        "items": "string"
+      },
+      "doc": "User labels"
+    }
   ]
 }
+

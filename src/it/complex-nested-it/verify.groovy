@@ -19,3 +19,7 @@ assert json.properties.attachments.description == 'Binary attachment ids'
 assert json.properties.customer.properties.id.description == 'Customer id'
 assert json.properties.customer.properties.name.description == 'Customer name'
 assert json.properties.customer.properties.addresses.items.properties.street.description == 'Street name'
+
+// Default assertions
+assert json.properties.customer.properties.name.default == null
+assert json.properties.payment.default == null

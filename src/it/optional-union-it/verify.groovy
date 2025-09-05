@@ -14,3 +14,8 @@ assert json.properties.orderId.description == 'Order identifier'
 assert json.properties.note.description == 'Optional note'
 assert json.properties.discount.description == 'Optional discount'
 assert json.properties.customer.anyOf || json.properties.customer.oneOf || json.properties.customer.type instanceof List
+
+// Default assertions
+assert json.properties.note.default == null
+assert json.properties.discount.default == null
+assert json.properties.status.default == 'PENDING'

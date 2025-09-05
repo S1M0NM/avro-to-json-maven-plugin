@@ -4,28 +4,76 @@
   "namespace": "it.optional",
   "doc": "Order with optional fields and union customer",
   "fields": [
-    {"name": "orderId", "type": "string", "doc": "Order identifier"},
-    {"name": "note", "type": ["null", "string"], "default": null, "doc": "Optional note"},
-    {"name": "discount", "type": ["null", "double"], "default": null, "doc": "Optional discount"},
-    {"name": "customer", "type": [
-      {
-        "type": "record",
-        "name": "RegisteredCustomer",
-        "doc": "Known registered customer",
-        "fields": [
-          {"name": "id", "type": "long", "doc": "Customer id"},
-          {"name": "email", "type": "string", "doc": "Email address"}
+    {
+      "name": "orderId",
+      "type": "string",
+      "doc": "Order identifier"
+    },
+    {
+      "name": "note",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "Optional note"
+    },
+    {
+      "name": "discount",
+      "type": [
+        "null",
+        "double"
+      ],
+      "default": null,
+      "doc": "Optional discount"
+    },
+    {
+      "name": "customer",
+      "type": [
+        {
+          "type": "record",
+          "name": "RegisteredCustomer",
+          "doc": "Known registered customer",
+          "fields": [
+            {
+              "name": "id",
+              "type": "long",
+              "doc": "Customer id"
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "doc": "Email address"
+            }
+          ]
+        },
+        {
+          "type": "record",
+          "name": "GuestCustomer",
+          "doc": "Guest checkout customer",
+          "fields": [
+            {
+              "name": "nickname",
+              "type": "string",
+              "doc": "Guest nickname"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "status",
+      "type": {
+        "type": "enum",
+        "name": "Status",
+        "symbols": [
+          "PENDING",
+          "PAID",
+          "CANCELLED"
         ]
       },
-      {
-        "type": "record",
-        "name": "GuestCustomer",
-        "doc": "Guest checkout customer",
-        "fields": [
-          {"name": "nickname", "type": "string", "doc": "Guest nickname"}
-        ]
-      }
-    ]},
-    {"name": "status", "type": {"type":"enum", "name":"Status", "symbols":["PENDING","PAID","CANCELLED"]}, "default":"PENDING", "doc": "Current order status"}
+      "default": "PENDING",
+      "doc": "Current order status"
+    }
   ]
 }

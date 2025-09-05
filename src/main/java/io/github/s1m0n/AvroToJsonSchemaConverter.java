@@ -1,12 +1,19 @@
 package io.github.s1m0n;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.avro.JsonProperties;
 import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class AvroToJsonSchemaConverter {
+
+    private static final Logger logger = LoggerFactory.getLogger(AvroToJsonSchemaConverter.class);
+
     static Map<String, Object> convert(Schema schema) {
         Map<String, Object> root = new LinkedHashMap<>();
         root.put("$schema", "http://json-schema.org/draft-07/schema#");
@@ -84,6 +91,11 @@ public class AvroToJsonSchemaConverter {
                     if (f.doc() != null && !f.doc().isEmpty()) {
                         propSchema.put("description", f.doc());
                     }
+                    // Add default value if present in Avro field
+                    if (f.hasDefaultValue()) {
+                        Object defaultVal = getDefaultValue(f);
+                        propSchema.put("default", defaultVal);
+                    }
                     props.put(f.name(), propSchema);
                     if (!isNullable(f.schema())) {
                         required.add(f.name());
@@ -110,6 +122,59 @@ public class AvroToJsonSchemaConverter {
                 node.put("type", "object");
         }
         return node;
+    }
+
+    private static Object getDefaultValue(Schema.Field f) {
+        try {
+            if (!f.hasDefaultValue()) {
+                return null;
+            }
+            return convertDefaultValue(f.defaultVal());
+        } catch (Exception e) {
+            // In case of unexpected default structure, skip adding default
+            logger.warn("Failed to convert default value for field '{}': {}", f.name(), e.getMessage());
+            return null;
+        }
+    }
+
+    private static Object convertDefaultValue(Object defaultValue) {
+        if (defaultValue == null) return null;
+        if (defaultValue == JsonProperties.NULL_VALUE) return null;
+        if (defaultValue instanceof JsonNode jn) {
+            return jsonNodeToJava(jn);
+        }
+        if (defaultValue instanceof CharSequence cs) return cs.toString();
+        if (defaultValue instanceof Number || defaultValue instanceof Boolean) return defaultValue;
+        if (defaultValue instanceof Map<?, ?> m) return m;
+        if (defaultValue instanceof List<?> l) return l;
+        // Fallback to string representation
+        return defaultValue.toString();
+    }
+
+    private static Object jsonNodeToJava(JsonNode node) {
+        if (node == null || node.isNull()) return null;
+        if (node.isTextual()) return node.asText();
+        if (node.isBoolean()) return node.asBoolean();
+        if (node.isInt() || node.isLong()) return node.longValue();
+        if (node.isFloat() || node.isDouble() || node.isBigDecimal()) return node.doubleValue();
+        if (node.isBigInteger()) return node.bigIntegerValue();
+        if (node.isArray()) {
+            List<Object> list = new ArrayList<>(node.size());
+            for (JsonNode el : node) list.add(jsonNodeToJava(el));
+            return list;
+        }
+        if (node.isObject()) {
+            Map<String, Object> map = new LinkedHashMap<>();
+            var fields = node.fields();
+            while (fields.hasNext()) {
+                var entry = fields.next();
+                map.put(entry.getKey(), jsonNodeToJava(entry.getValue()));
+            }
+            return map;
+        }
+        // numbers fallback
+        if (node.isNumber()) return node.numberValue();
+        return node.asText();
     }
 
     private static boolean isNullable(Schema schema) {
