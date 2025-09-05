@@ -27,7 +27,7 @@ Add the plugin to your project `pom.xml`. You can execute it on demand or bind i
         <plugin>
             <groupId>io.github.s1m0nm</groupId>
             <artifactId>avro-to-json-plugin</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
+            <version>0.0.5-SNAPSHOT</version>
             <executions>
                 <execution>
                     <goals>
@@ -50,7 +50,7 @@ Add the plugin to your project `pom.xml`. You can execute it on demand or bind i
 Alternatively, run it directly:
 
 ```
-mvn io.github.s1m0nm:avro-to-json-plugin:0.0.3-SNAPSHOT:avsc-to-json \
+mvn io.github.s1m0nm:avro-to-json-plugin:0.0.5-SNAPSHOT:avsc-to-json \
   -Davro.input=src/main/avro \
   -Davro.output=target/generated-schemas \
   -Davro.recursive=true
