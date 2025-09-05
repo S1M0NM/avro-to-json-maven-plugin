@@ -85,8 +85,8 @@ public class AvroToJsonSchemaConverter {
                 Map<String, Object> props = new LinkedHashMap<>();
                 List<String> required = new ArrayList<>();
                 for (Schema.Field f : schema.getFields()) {
-                    Schema fSchema = unwrapNullable(f.schema());
-                    Map<String, Object> propSchema = toJsonSchema(fSchema);
+                    // Do not unwrap nullable; pass full schema so JSON Schema includes null when applicable
+                    Map<String, Object> propSchema = toJsonSchema(f.schema());
                     // Add field description from Avro field doc when present
                     if (f.doc() != null && !f.doc().isEmpty()) {
                         propSchema.put("description", f.doc());
@@ -107,6 +107,21 @@ public class AvroToJsonSchemaConverter {
             case UNION:
                 List<Schema> types = schema.getTypes();
                 boolean nullable = types.stream().anyMatch(t -> t.getType() == Schema.Type.NULL);
+                List<Schema> nonNullTypes = new ArrayList<>();
+                for (Schema t : types) if (t.getType() != Schema.Type.NULL) nonNullTypes.add(t);
+
+                // If this is a simple nullable union with a single non-null type, prefer JSON Schema "type" array
+                if (nullable && nonNullTypes.size() == 1) {
+                    Map<String, Object> base = toJsonSchema(nonNullTypes.getFirst());
+                    Object baseType = base.get("type");
+                    if (baseType instanceof String s) {
+                        node.putAll(base);
+                        node.put("type", Arrays.asList(s, "null"));
+                        return node;
+                    }
+                    // If base type is not a simple type string, fall back to anyOf representation below
+                }
+
                 List<Map<String, Object>> anyOf = new ArrayList<>();
                 for (Schema t : types) {
                     if (t.getType() == Schema.Type.NULL) continue;
@@ -115,7 +130,6 @@ public class AvroToJsonSchemaConverter {
                 if (nullable) {
                     anyOf.add(Collections.singletonMap("type", "null"));
                 }
-                if (anyOf.size() == 1) return anyOf.getFirst();
                 node.put("anyOf", anyOf);
                 break;
             default:
@@ -182,13 +196,6 @@ public class AvroToJsonSchemaConverter {
             for (Schema t : schema.getTypes()) if (t.getType() == Schema.Type.NULL) return true;
         }
         return false;
-    }
-
-    private static Schema unwrapNullable(Schema schema) {
-        if (schema.getType() == Schema.Type.UNION) {
-            for (Schema t : schema.getTypes()) if (t.getType() != Schema.Type.NULL) return t;
-        }
-        return schema;
     }
 
     private static boolean isLogical(Schema schema, String logical) {
