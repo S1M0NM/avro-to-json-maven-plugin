@@ -17,6 +17,10 @@ public class AvroToJsonSchemaConverter {
 
     private static Map<String, Object> toJsonSchema(Schema schema) {
         Map<String, Object> node = new LinkedHashMap<>();
+        // Add description from Avro schema doc when present
+        if (schema.getDoc() != null && !schema.getDoc().isEmpty()) {
+            node.put("description", schema.getDoc());
+        }
         switch (schema.getType()) {
             case NULL:
                 node.put("type", "null");
@@ -75,7 +79,12 @@ public class AvroToJsonSchemaConverter {
                 List<String> required = new ArrayList<>();
                 for (Schema.Field f : schema.getFields()) {
                     Schema fSchema = unwrapNullable(f.schema());
-                    props.put(f.name(), toJsonSchema(fSchema));
+                    Map<String, Object> propSchema = toJsonSchema(fSchema);
+                    // Add field description from Avro field doc when present
+                    if (f.doc() != null && !f.doc().isEmpty()) {
+                        propSchema.put("description", f.doc());
+                    }
+                    props.put(f.name(), propSchema);
                     if (!isNullable(f.schema())) {
                         required.add(f.name());
                     }
