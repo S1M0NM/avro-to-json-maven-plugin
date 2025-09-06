@@ -1,6 +1,6 @@
 # Avro to JSON Schema Maven Plugin
 
-[![Apache License, Version 2.0, January 2004](https://img.shields.io/github/license/mojohaus/versions-maven-plugin.svg?label=License)](http://www.apache.org/licenses/)
+[![GitHub license](https://img.shields.io/github/license/S1M0NM/avro-to-json-maven-plugin.svg)](https://github.com/S1M0NM/avro-to-json-maven-plugin/blob/main/LICENSE)
 
 Convert Apache Avro `.avsc` schemas to JSON Schema (Draft-07) during your Maven build.
 
