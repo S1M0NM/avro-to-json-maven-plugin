@@ -37,7 +37,7 @@ Add the plugin to your project `pom.xml`. You can execute it on demand or bind i
                     <phase>generate-resources</phase>
                     <configuration>
                         <input>${project.basedir}/src/main/avro</input>
-                        <output>${project.build.directory}/generated-schemas</output>
+                        <outputDirectory>${project.build.directory}/generated-schemas</outputDirectory>
                         <recursive>true</recursive>
                     </configuration>
                 </execution>
@@ -51,9 +51,15 @@ Alternatively, run it directly:
 
 ```
 mvn io.github.s1m0nm:avro-to-json-plugin:0.0.5-SNAPSHOT:avsc-to-json \
-  -Davro.input=src/main/avro \
-  -Davro.output=target/generated-schemas \
-  -Davro.recursive=true
+  -Dinput=src/main/avro \
+  -DoutputDirectory=target/generated-schemas \
+  -Drecursive=true
+```
+
+Show plugin help:
+
+```
+mvn io.github.s1m0nm:avro-to-json-plugin:0.0.5-SNAPSHOT:help -Ddetail -Dgoal=avsc-to-json
 ```
 
 ## Goal
@@ -63,13 +69,13 @@ mvn io.github.s1m0nm:avro-to-json-plugin:0.0.5-SNAPSHOT:avsc-to-json \
 ## Configuration Parameters
 
 - `input` (required) — File or directory to scan for `.avsc` files.
-    - Property: `avro.input`
-- `output` (required, with default) — Output directory for generated JSON Schemas.
+    - Property: `input`
+- `outputDirectory` (required, with default) — Output directory for generated JSON Schemas.
     - Default: `${project.build.directory}/generated-schemas`
-    - Property: `avro.output`
+    - Property: `outputDirectory`
 - `recursive` — Whether to recurse into subdirectories when `input` is a directory.
     - Default: `true`
-    - Property: `avro.recursive`
+    - Property: `recursive`
 
 Example minimal configuration:
 
@@ -147,7 +153,7 @@ mvn -Prun-its verify
 
 ## Troubleshooting
 
-- "Input path does not exist": ensure `-Davro.input` or `<input>` points to a valid file or directory.
+- "Input path does not exist": ensure `-Dinput` or `<input>` points to a valid file or directory.
 - No files generated: verify your `.avsc` files are present and the `recursive` flag covers nested directories as
   needed.
 - JSON defaults: complex Avro defaults are converted on a best-effort basis; unexpected structures may be skipped with a

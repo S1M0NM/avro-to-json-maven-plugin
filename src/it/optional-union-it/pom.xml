@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>io.github.s1m0n.it</groupId>
-  <artifactId>optional-union-it</artifactId>
-  <version>1.0-SNAPSHOT</version>
+    <groupId>io.github.s1m0n.it</groupId>
+    <artifactId>optional-union-it</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
-  <description>IT verifying optional fields and union types.</description>
+    <description>IT verifying optional fields and union types.</description>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>@project.groupId@</groupId>
-        <artifactId>@project.artifactId@</artifactId>
-        <version>@project.version@</version>
-        <executions>
-          <execution>
-            <id>avsc-to-json</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>avsc-to-json</goal>
-            </goals>
-            <configuration>
-              <input>${project.basedir}/src/main/avro</input>
-              <avro.output>${project.build.directory}/generated-schemas</avro.output>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>@project.groupId@</groupId>
+                <artifactId>@project.artifactId@</artifactId>
+                <version>@project.version@</version>
+                <executions>
+                    <execution>
+                        <id>avsc-to-json</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>avsc-to-json</goal>
+                        </goals>
+                        <configuration>
+                            <input>${project.basedir}/src/main/avro</input>
+                            <outputDirectory>${project.build.directory}/generated-schemas</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

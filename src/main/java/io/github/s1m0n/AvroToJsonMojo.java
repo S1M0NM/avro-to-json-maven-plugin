@@ -35,24 +35,24 @@ public class AvroToJsonMojo extends AbstractMojo {
     /**
      * Input file or directory containing Avro schema JSON files (.avsc).
      */
-    @Parameter(property = "avro.input", required = true)
+    @Parameter(property = "input", alias = "input", required = true)
     private File input;
 
     /**
      * Output directory where JSON Schema files will be written.
      */
-    @Parameter(defaultValue = "${project.build.directory}/generated-schemas", property = "avro.output", required = true)
+    @Parameter(property = "outputDirectory", alias = "outputDirectory", defaultValue = "${project.build.directory}/generated-schemas", required = true)
     private File outputDirectory;
 
     /**
      * Whether to search directories recursively for .avsc files.
      */
-    @Parameter(property = "avro.recursive", defaultValue = "true")
+    @Parameter(property = "recursive", alias = "recursive", defaultValue = "true")
     private boolean recursive;
 
     public void execute() throws MojoExecutionException {
         if (input == null) {
-            throw new MojoExecutionException("Parameter 'input' is required (avro.input)");
+            throw new MojoExecutionException("Parameter 'input' is required. Use -Dinput or <input> configuration.");
         }
         if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
             throw new MojoExecutionException("Could not create output directory: " + outputDirectory);
