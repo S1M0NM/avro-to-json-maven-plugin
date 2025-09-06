@@ -29,12 +29,34 @@
     </properties>
 
     <distributionManagement>
+        <!-- Release-Artefakte -->
         <repository>
-            <id>github</id>
-            <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/S1M0NM/avro-to-json-maven-plugin</url>
+            <id>ossrh</id>
+            <name>OSSRH Release Repository</name>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
+
+        <!-- Snapshot-Artefakte -->
+        <snapshotRepository>
+            <id>ossrh</id>
+            <name>OSSRH Snapshot Repository</name>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
     </distributionManagement>
+
+    <developers>
+        <developer>
+            <name>Simon Marksteiner</name>
+            <email>s1m0nm.github@gmail.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/S1M0NM/avro-to-json-maven-plugin.git</connection>
+        <developerConnection>scm:git:ssh://github.com:S1M0NM/avro-to-json-maven-plugin.git
+        </developerConnection>
+        <url>https://github.com/S1M0NM/avro-to-json-maven-plugin</url>
+    </scm>
 
     <dependencies>
         <!-- Maven Plugin Dependencies -->
@@ -97,6 +119,68 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Source JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Javadoc JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.11.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- GPG Signatur -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.8</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- Prevent gpg from using pinentry programs -->
+                    <gpgArguments>
+                        <arg>--pinentry-mode</arg>
+                        <arg>loopback</arg>
+                    </gpgArguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.8.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>ossrh</publishingServerId>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <profiles>
@@ -126,7 +210,6 @@
                         </executions>
                     </plugin>
                 </plugins>
-
             </build>
         </profile>
     </profiles>

@@ -162,3 +162,9 @@ mvn -Prun-its verify
 ## License
 
 This project follows the license of the repository. See the LICENSE file if present in the repository.
+
+## Release
+
+```
+mvn deploy -P release
+```
