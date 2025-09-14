@@ -61,6 +61,7 @@ public class AvroToJsonMojo extends AbstractMojo {
             throw new MojoExecutionException("Input path does not exist: " + input);
         }
         try {
+            AvroToJsonSchemaConverter.setLog(getLog());
             if (input.isDirectory()) {
                 processDirectory(input);
             } else {
@@ -73,7 +74,9 @@ public class AvroToJsonMojo extends AbstractMojo {
 
     private void processDirectory(File dir) throws IOException, MojoExecutionException {
         File[] files = dir.listFiles();
-        if (files == null) return;
+        if (files == null) {
+            return;
+        }
         for (File f : files) {
             if (f.isDirectory() && recursive) {
                 processDirectory(f);

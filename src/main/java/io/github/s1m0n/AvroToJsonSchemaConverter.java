@@ -20,14 +20,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.avro.JsonProperties;
 import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.maven.plugin.logging.Log;
 
 import java.util.*;
 
 public class AvroToJsonSchemaConverter {
 
-    private static final Logger logger = LoggerFactory.getLogger(AvroToJsonSchemaConverter.class);
+    private static Log LOG;
+
+    static void setLog(Log log) {
+        LOG = log;
+    }
 
     static Map<String, Object> convert(Schema schema) {
         Map<String, Object> root = new LinkedHashMap<>();
@@ -187,7 +190,9 @@ public class AvroToJsonSchemaConverter {
             return convertDefaultValue(f.defaultVal());
         } catch (Exception e) {
             // In case of unexpected default structure, skip adding default
-            logger.warn("Failed to convert default value for field '{}': {}", f.name(), e.getMessage());
+            if (LOG != null) {
+                LOG.warn("Failed to convert default value for field '" + f.name() + "': " + e.getMessage());
+            }
             return null;
         }
     }
