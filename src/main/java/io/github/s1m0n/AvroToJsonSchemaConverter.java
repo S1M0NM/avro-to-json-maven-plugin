@@ -51,17 +51,27 @@ public class AvroToJsonSchemaConverter {
                 node.put("type", "boolean");
                 break;
             case INT:
-                node.put("type", "integer");
-                node.put("format", "int32");
-                break;
-            case LONG:
-                node.put("type", "integer");
-                if (isLogical(schema, "timestamp-millis")) {
-                    node.put("type", "string");
-                    node.put("format", "date-time");
-                } else if (isLogical(schema, "date")) {
+                if (isLogical(schema, "date")) {
                     node.put("type", "string");
                     node.put("format", "date");
+                } else if (isLogical(schema, "time-millis")) {
+                    node.put("type", "string");
+                    node.put("format", "time");
+                } else {
+                    node.put("type", "integer");
+                    node.put("format", "int32");
+                }
+                break;
+            case LONG:
+                if (isLogical(schema, "timestamp-millis") || isLogical(schema, "timestamp-micros")
+                        || isLogical(schema, "local-timestamp-millis") || isLogical(schema, "local-timestamp-micros")) {
+                    node.put("type", "string");
+                    node.put("format", "date-time");
+                } else if (isLogical(schema, "time-micros")) {
+                    node.put("type", "string");
+                    node.put("format", "time");
+                } else {
+                    node.put("type", "integer");
                 }
                 break;
             case FLOAT:
@@ -73,19 +83,35 @@ public class AvroToJsonSchemaConverter {
                 node.put("format", "double");
                 break;
             case BYTES:
-                node.put("type", "string");
-                node.put("contentEncoding", "base64");
+                if (isLogical(schema, "decimal")) {
+                    convertDecimal(schema, node);
+                } else {
+                    node.put("type", "string");
+                    node.put("contentEncoding", "base64");
+                }
                 break;
             case STRING:
-                node.put("type", "string");
+                if (isLogical(schema, "uuid")) {
+                    node.put("type", "string");
+                    node.put("format", "uuid");
+                } else {
+                    node.put("type", "string");
+                }
                 break;
             case ENUM:
                 node.put("type", "string");
                 node.put("enum", schema.getEnumSymbols());
                 break;
             case FIXED:
-                node.put("type", "string");
-                node.put("contentEncoding", "base64");
+                if (isLogical(schema, "decimal")) {
+                    convertDecimal(schema, node);
+                } else if (isLogical(schema, "duration")) {
+                    node.put("type", "string");
+                    node.put("format", "duration");
+                } else {
+                    node.put("type", "string");
+                    node.put("contentEncoding", "base64");
+                }
                 break;
             case ARRAY:
                 node.put("type", "array");
@@ -214,7 +240,25 @@ public class AvroToJsonSchemaConverter {
     }
 
     private static boolean isLogical(Schema schema, String logical) {
+        // as of Avro 1.11.4, decimal is a logical type, but not fully implemented as a logical type
+        Object logicalType = schema.getObjectProp("logicalType");
+        if (schema.getType() == Schema.Type.FIXED && logicalType != null && logicalType.equals(logical))
+            return true;
+
         LogicalType lt = schema.getLogicalType();
         return lt != null && logical.equals(lt.getName());
+    }
+
+    private static void convertDecimal(Schema schema, Map<String, Object> node) {
+        node.put("type", "string");
+        try {
+            String precision = schema.getObjectProp("precision") != null ? schema.getObjectProp("precision").toString() : null;
+            String scale = schema.getObjectProp("scale") != null ? schema.getObjectProp("scale").toString() : null;
+            node.put("x-avro-logicalType", "decimal");
+            if (precision != null) node.put("x-precision", Integer.parseInt(precision));
+            if (scale != null) node.put("x-scale", Integer.parseInt(scale));
+        } catch (Exception ignored) {
+            node.put("x-avro-logicalType", "decimal");
+        }
     }
 }
