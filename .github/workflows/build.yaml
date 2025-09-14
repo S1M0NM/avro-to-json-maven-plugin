@@ -1,4 +1,4 @@
-name: Build and Conditional Deploy
+name: Build
 
 on:
   push:
