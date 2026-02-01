@@ -4,7 +4,7 @@
 
     <groupId>io.github.s1m0nm</groupId>
     <artifactId>avro-to-json-plugin</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <packaging>maven-plugin</packaging>
 
     <name>avro-to-json-plugin Maven Plugin</name>
