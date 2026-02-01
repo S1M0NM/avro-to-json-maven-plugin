@@ -16,11 +16,11 @@ package io.github.s1m0n;
  * limitations under the License.
  */
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.avro.JsonProperties;
 import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;
 import org.apache.maven.plugin.logging.Log;
+import tools.jackson.databind.JsonNode;
 
 import java.util.*;
 
@@ -213,7 +213,7 @@ public class AvroToJsonSchemaConverter {
 
     private static Object jsonNodeToJava(JsonNode node) {
         if (node == null || node.isNull()) return null;
-        if (node.isTextual()) return node.asText();
+        if (node.isString()) return node.asString();
         if (node.isBoolean()) return node.asBoolean();
         if (node.isInt() || node.isLong()) return node.longValue();
         if (node.isFloat() || node.isDouble() || node.isBigDecimal()) return node.doubleValue();
@@ -225,16 +225,14 @@ public class AvroToJsonSchemaConverter {
         }
         if (node.isObject()) {
             Map<String, Object> map = new LinkedHashMap<>();
-            var fields = node.fields();
-            while (fields.hasNext()) {
-                var entry = fields.next();
+            for (Map.Entry<String, JsonNode> entry : node.properties()) {
                 map.put(entry.getKey(), jsonNodeToJava(entry.getValue()));
             }
             return map;
         }
         // numbers fallback
         if (node.isNumber()) return node.numberValue();
-        return node.asText();
+        return node.asString();
     }
 
     private static boolean isNullable(Schema schema) {
